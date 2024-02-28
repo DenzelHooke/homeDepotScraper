@@ -1,5 +1,25 @@
+import time
 from bs4 import BeautifulSoup
 import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import webdriver_manager
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+import undetected_chromedriver as uc
+
+
+
+options = Options()
+# Keeps browser open
+# options.add_experimental_option("detach", True)
+
+
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+driver = uc.Chrome()
 
 from typing import TypedDict, Unpack
 
@@ -82,17 +102,50 @@ class Scraper:
                 # print(soup.prettify)
 
 
-                    
-                
-        
-
 
 def main():
+    wait = WebDriverWait(driver=driver, timeout=10)
+    
+    # Scraper().scrape(mode="lumber")
+    driver.get(r"https://www.homedepot.ca/search?q=2x4%20spf&filter=1pz-4uf")
+    # links = driver.find_elements("xpath", "//a[@href]")
+    
+    # for link in links:
+    #     print(link.get_attribute("innerHTML"))
+    
+    # product_cards = driver.find_elements("xpath", 
+    #                                      "//article[contains(@class, acl-product-card)][.//h2[contains(@class, acl-product-card__title)]]")
+    
+    # product_cards = driver.find_elements("xpath", 
+    #                                      "//article[contains(@class, acl-product-card)][.//a[contains(@class, acl-product-card__title-link)][.//span[text()[contains(., '2-inch x 4-inch x 8 ft. SPF Dimensional Lumber')]]]]//h2//span") 
+    
+    time.sleep(3)
+    
+    product_cards = driver.find_elements("xpath", 
+                                         "//article[contains(@class, acl-product-card)][.//a[contains(@class, acl-product-card__title-link)]]")
 
-    Scraper().scrape(mode="lumber")
+    for card in product_cards: 
+        # print(card.)
+        product_name = card.find_element(By.XPATH, ".//h2//span")
+        print(product_name.text)
         
-
-
+        # product_price = card.find_element(By.XPATH, './/div[contains(@class, "acl-product-card__price")]')
+        # product_dollar = wait.until(EC.visibility_of(product_price.find_element('.//div[contains(@class, "acl-product-card__price-dollars")]//span'))).text
+        
+        prod_cent_waited = wait.until(EC.visibility_of(card.find_element(By.XPATH, "//div[contains(@class, 'acl-product-card__price-cents')]//span")))
+        prod_dollar_waited = wait.until(EC.visibility_of(card.find_element(By.XPATH, ".//div[contains(@class, 'acl-product-card__price-dollars')]//span")))
+        
+        # print(f'${product_dllr}')
+        
+        pieceCost = float(f"{prod_dollar_waited.text.split('$')[1]}.{prod_cent_waited.text.split("\n")[0]}")
+       
+        print("Cost: $", pieceCost)
+        # print(pieceCost)
+        
+        # print(product_price.get_attribute("innerHTML"))
+        
+        
+        
 
 
 if __name__ == "__main__":
