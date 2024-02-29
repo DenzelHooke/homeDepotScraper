@@ -10,16 +10,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 import undetected_chromedriver as uc
-
-
-
-options = Options()
-# Keeps browser open
+# options = Options()
+# # Keeps browser open
 # options.add_experimental_option("detach", True)
 
 
+
+options = uc.ChromeOptions()
+options.add_argument("--headless")
 # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-driver = uc.Chrome()
+driver = uc.Chrome(options=options)
 
 from typing import TypedDict, Unpack
 
@@ -137,7 +137,7 @@ def main():
         
         # print(f'${product_dllr}')
         
-        pieceCost = float(f"{prod_dollar_waited.text.split('$')[1]}.{prod_cent_waited.text.split("\n")[0]}")
+        pieceCost = float(f"{prod_dollar_waited.text.split('$')[1]}.{prod_cent_waited.text.split(f'\n',)[0]}")
        
         print("Cost: $", pieceCost)
         # print(pieceCost)
